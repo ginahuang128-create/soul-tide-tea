@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>潮汐對頻夜 ➔ 角色休眠席 | 穆葉茶坊</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- 中文襯線字體：明體質感 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink-bg:#0A0A0C;
+    --moon:#EAE6DF;
+    --gold:#D4AF37;
+    --gold-dim: rgba(212,175,55,0.10);
+    --gold-line: rgba(212,175,55,0.18);
+  }
+
+  html,body{
+    background:
+      radial-gradient(ellipse 65% 42% at 78% 4%, rgba(238,222,170,0.14), transparent 62%),
+      radial-gradient(ellipse 75% 55% at 12% 0%, rgba(120,140,200,0.13), transparent 58%),
+      radial-gradient(ellipse 90% 60% at 50% 100%, rgba(80,70,110,0.08), transparent 60%),
+      linear-gradient(180deg, #11131F 0%, #0D0E1A 50%, #0B0C16 100%);
+    color:var(--moon);
+    font-family:'Noto Serif TC','Cormorant Garamond',serif;
+    overflow-x:hidden;
+  }
+
+  .font-display{
+    font-family:'Cormorant Garamond','Noto Serif TC',serif;
+  }
+
+  .glow-gold{
+    text-shadow: 0 0 18px rgba(212,175,55,0.32), 0 0 2px rgba(212,175,55,0.2);
+  }
+
+  /* ---------- 月光暈（呼應海報滿月） ---------- */
+  .moon-glow{
+    position:fixed; top:-130px; right:-90px; width:340px; height:340px; border-radius:50%;
+    background: radial-gradient(circle, rgba(238,222,170,0.40), rgba(212,175,55,0.14) 45%, transparent 72%);
+    filter: blur(36px);
+    z-index:0; pointer-events:none;
+  }
+  @media (max-width:640px){
+    .moon-glow{ width:230px; height:230px; top:-90px; right:-60px; }
+  }
+
+  /* ---------- 山水墨色剪影（呼應海報遠山） ---------- */
+  .mountain-art{
+    position:fixed; left:0; right:0; bottom:0; height:32vh; max-height:220px;
+    z-index:0; pointer-events:none; opacity:0.55;
+  }
+
+  /* ---------- 閃爍星空（不模糊，銳利的小星點） ---------- */
+  #stars{
+    position:fixed; inset:0; z-index:0; width:100%; height:100%;
+  }
+
+  /* ---------- 粒子背景 ---------- */
+  #particles{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    filter: blur(28px);
+    opacity:0.85;
+  }
+  .bg-vignette{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(circle at 50% 28%, rgba(0,0,0,0) 0%, rgba(5,6,12,0.42) 100%);
+  }
+  .grain{
+    position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- 玻璃擬態卡片 ---------- */
+  .glass-card{
+    position:relative;
+    background: rgba(10,10,12,0.42);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.05) inset, 0 30px 80px -20px rgba(0,0,0,0.7);
+  }
+  .glass-card::before{
+    content:"";
+    position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background: linear-gradient(160deg, rgba(212,175,55,0.06), transparent 40%);
+  }
+
+  .rune-divider{
+    height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold-line) 50%, transparent);
+  }
+
+  /* ---------- 輸入框 ---------- */
+  .field-input{
+    width:100%;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(234,230,223,0.18);
+    border-radius: 0.6rem;
+    padding: 0.75rem 1rem;
+    color: var(--moon);
+    font-family:'Noto Serif TC',serif;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+  }
+  .field-input::placeholder{ color: rgba(234,230,223,0.35); }
+  .field-input:focus{
+    outline:none;
+    border-color: var(--gold);
+    background: rgba(212,175,55,0.04);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+  }
+  .field-label{
+    display:block; font-size:0.95rem; letter-spacing:0.03em;
+    color: rgba(234,230,223,0.8); margin-bottom:0.4rem;
+  }
+  .field-hint{
+    font-size:0.85rem; color: rgba(234,230,223,0.5); margin-top:0.35rem; line-height:1.6;
+  }
+
+  /* ---------- 選項按鈕（單選） ---------- */
+  .choice-btn{
+    display:block; width:100%; text-align:left;
+    border:1px solid rgba(234,230,223,0.16);
+    background: rgba(255,255,255,0.015);
+    border-radius:0.7rem;
+    padding: 0.9rem 1.1rem;
+    cursor:pointer;
+    transition: all .25s ease;
+    font-size:1.02rem;
+    line-height:1.65;
+  }
+  .choice-btn:hover{ border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.04); }
+  .choice-btn.selected{
+    border-color: var(--gold);
+    background: rgba(212,175,55,0.09);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.25) inset;
+  }
+  .choice-btn .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    border:1px solid rgba(212,175,55,0.5); margin-right:0.6rem; flex-shrink:0;
+    transition: background .25s;
+  }
+  .choice-btn.selected .dot{ background: var(--gold); }
+
+  /* ---------- 按鈕 ---------- */
+  .btn-gold{
+    background: linear-gradient(180deg, rgba(227,193,88,0.30), rgba(212,175,55,0.30));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212,175,55,0.55);
+    color: #F2E2AC;
+    border-radius: 999px;
+    padding: 0.85rem 1.8rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+    transition: transform .25s, box-shadow .25s, opacity .25s, background .25s;
+    box-shadow: 0 8px 24px -10px rgba(212,175,55,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .btn-gold:hover{ transform: translateY(-1px); background: linear-gradient(180deg, rgba(227,193,88,0.42), rgba(212,175,55,0.42)); }
+  .btn-gold:active{ transform: scale(0.97); }
+  .btn-gold:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .btn-gold.pulse{
+    animation: btnPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes btnPulse{
+    0%,100%{ box-shadow: 0 8px 24px -10px rgba(212,175,55,0.35), 0 0 0 0 rgba(212,175,55,0.3); }
+    50%{ box-shadow: 0 8px 24px -10px rgba(212,175,55,0.5), 0 0 0 7px rgba(212,175,55,0); }
+  }
+
+  /* ---------- 底部固定行動列（手機優先） ---------- */
+  #actionBar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    background: rgba(7,7,10,0.82);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(212,175,55,0.14);
+    padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom));
+  }
+  #actionBar .action-inner{ max-width:42rem; margin:0 auto; display:flex; align-items:center; gap:0.6rem; }
+  #prevBtn.invisible-step{ opacity:0; pointer-events:none; }
+  #nextLabel{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  @media (max-width: 640px){
+    #actionBar .btn-gold{ padding:0.7rem 0.9rem; font-size:0.82rem; letter-spacing:0.01em; }
+    #actionBar .btn-ghost{ padding:0.7rem 0.6rem; font-size:0.82rem; flex-shrink:0; }
+  }
+
+  @media (min-width: 640px){
+    #actionBar{
+      position:static; background:transparent; border-top:0; padding:0; margin-top:2rem;
+      -webkit-backdrop-filter:none; backdrop-filter:none;
+    }
+  }
+
+  .btn-ghost{
+    color: rgba(234,230,223,0.65);
+    padding: 0.85rem 1rem;
+    border-radius:999px;
+    transition: color .25s, background .25s;
+  }
+  .btn-ghost:hover{ color: var(--moon); background: rgba(255,255,255,0.04); }
+
+  /* ---------- 步驟切換 ---------- */
+  .step{
+    display:none;
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .step.active{
+    display:block;
+    opacity:1;
+    transform: translateY(0);
+  }
+  .step.leaving{
+    opacity:0;
+    transform: translateY(-8px);
+  }
+
+  /* ---------- 進度刻度 ---------- */
+  .progress-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: rgba(234,230,223,0.2);
+    transition: all .4s ease;
+  }
+  .progress-dot.done{ background: var(--gold); }
+  .progress-dot.current{ background: var(--gold); width:18px; border-radius:4px; }
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+    z-index:50; opacity:0; pointer-events:none;
+    transition: opacity .35s, transform .35s;
+    max-width:90%;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* 海報圖片容器 */
+  .poster-frame{
+    border:1px solid var(--gold-line);
+    border-radius:0.9rem;
+    overflow:hidden;
+    background: linear-gradient(160deg, rgba(212,175,55,0.06), rgba(255,255,255,0.01));
+  }
+
+  textarea.field-input{ resize: vertical; min-height: 96px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .step{ transition:none; }
+    #particles{ display:none; }
+    #stars{ display:none; }
+  }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<canvas id="stars"></canvas>
+<canvas id="particles"></canvas>
+<div class="bg-vignette"></div>
+<div class="grain"></div>
+<div class="moon-glow"></div>
+<svg class="mountain-art" viewBox="0 0 1000 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,300 L0,200 L120,140 L220,190 L340,90 L460,170 L560,120 L680,200 L780,150 L880,210 L1000,160 L1000,300 Z" fill="rgba(12,14,24,0.55)"/>
+  <path d="M0,300 L0,240 L150,210 L300,250 L420,190 L540,240 L660,200 L800,250 L1000,220 L1000,300 Z" fill="rgba(8,9,16,0.75)"/>
+  <path d="M0,200 L120,140 L220,190 L340,90 L460,170 L560,120 L680,200 L780,150 L880,210 L1000,160" fill="none" stroke="rgba(212,175,55,0.18)" stroke-width="1.5"/>
+</svg>
+
+<div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-10 sm:py-16">
+  <div class="glass-card w-full max-w-2xl rounded-2xl p-6 sm:p-10">
+
+    <!-- 進度刻度（共 5 步，真實流程順序） -->
+    <div class="flex items-center justify-between mb-8">
+      <div id="progressBar" class="flex items-center gap-2"></div>
+      <span id="stepCounter" class="text-sm tracking-widest text-[#EAE6DF]/40"></span>
+    </div>
+
+    <form id="regForm" novalidate>
+
+      <!-- ============ Page 1 ============ -->
+      <section data-step="1" class="step active pb-24 sm:pb-0">
+        <div class="poster-frame mb-6 min-h-[140px] flex items-center justify-center">
+          <img src="https://i.meee.com.tw/98KJXeY.png" alt="潮汐對頻夜活動海報" class="w-full h-auto object-contain"
+               onerror="handlePosterError(this)" />
+        </div>
+
+        <p class="text-sm tracking-[0.2em] text-[#D4AF37]/80 mb-2">穆葉茶坊・限定夜席</p>
+        <h1 class="font-display glow-gold text-3xl sm:text-4xl leading-snug mb-1">潮汐對頻夜</h1>
+        <p class="font-display glow-gold text-xl sm:text-2xl text-[#D4AF37] mb-5">➔ 角色休眠席</p>
+
+        <p class="text-lg sm:text-xl mb-5 leading-relaxed">一場療癒身心與靈魂對話的夜晚。<br>在茶香與符文之間，遇見真實的自己。</p>
+
+        <div class="rune-divider mb-5"></div>
+
+        <p class="text-base sm:text-lg leading-loose text-[#EAE6DF]/85 mb-2">
+          忙碌了一整週，妳是否總是用「我很好」硬撐著？這一夜，走進穆葉茶坊的微光裡，讓茶湯融化防備，讓星盤與符文解碼妳的靈魂。
+        </p>
+      </section>
+
+      <!-- ============ Page 2 ============ -->
+      <section data-step="2" class="step pb-24 sm:pb-0">
+        <h2 class="font-display glow-gold text-[1.7rem] sm:text-3xl mb-2">靈魂密碼 ➔ 陰陽調頻</h2>
+        <p class="text-base sm:text-lg leading-loose text-[#EAE6DF]/85 mb-6">
+          尋找妳的陰與陽——出生時刻裡，藏著妳習慣前進（陽）還是隱忍（陰）硬撐的秘密。占星老師將靜心為妳計算盤況。
+        </p>
+
+        <div class="border border-[#D4AF37]/20 bg-[#D4AF37]/5 rounded-xl p-4 mb-7 text-sm leading-relaxed text-[#EAE6DF]/75">
+          🔒 <span class="text-[#D4AF37]/90">隱私與個資保護聲明</span><br>
+          妳的出生時間與個資，僅用於本次星盤陰陽能量計算，活動結束後 24 小時內全數銷毀，請安心填寫。
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <label class="field-label">妳的名字 / 稱呼</label>
+            <input type="text" name="name" class="field-input" placeholder="例如：小雯" required />
+          </div>
+          <div>
+            <label class="field-label">國曆出生年 / 月 / 日</label>
+            <input type="date" name="birthDate" class="field-input" required />
+          </div>
+          <div>
+            <label class="field-label">精準出生時間（24小時制）</label>
+            <input type="time" name="birthTime" class="field-input" required />
+            <label class="flex items-center gap-2 mt-2 text-sm text-[#EAE6DF]/65">
+              <input type="checkbox" name="birthTimeUnknown" id="birthTimeUnknown" class="accent-[#D4AF37]" onchange="toggleBirthTime(this)" />
+              時間不確定
+            </label>
+            <p class="field-hint">時間差 5–10 分鐘，盤況就可能不同，建議翻看出生證明確認；若真的不知道，請勾選「時間不確定」。</p>
+          </div>
+          <div>
+            <label class="field-label">出生地點（城市）</label>
+            <input type="text" name="birthPlace" class="field-input" placeholder="例如：台北市、台中市" required />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Page 3 ============ -->
+      <section data-step="3" class="step pb-24 sm:pb-0">
+        <h2 class="font-display glow-gold text-[1.7rem] sm:text-3xl mb-2">內在對頻 ➔ 茶香備妥</h2>
+        <p class="text-base sm:text-lg leading-loose text-[#EAE6DF]/85 mb-6">
+          閉上眼，感受此刻的自己——妳正帶著哪種情緒硬撐？勾選最真實的選項，讓我們提早備好那盞融化防備的茶。
+        </p>
+
+        <div class="space-y-3" id="innerStateGroup">
+          <button type="button" class="choice-btn" data-value="想徹底按下休眠鍵、好好放鬆" onclick="selectChoice(this,'innerState')">
+            <span class="dot"></span>我最近太緊繃硬撐了，好想徹底按下休眠鍵、好好放鬆。
+          </button>
+          <button type="button" class="choice-btn" data-value="需要大膽劃清界線、為自己前進" onclick="selectChoice(this,'innerState')">
+            <span class="dot"></span>我最近感到有些委屈隱忍，需要大膽劃清界線、為自己前進的力量。
+          </button>
+          <button type="button" class="choice-btn" data-value="交給當天茶席與符文的指引" onclick="selectChoice(this,'innerState')">
+            <span class="dot"></span>我不確定，想交給當天茶席與符文的指引。
+          </button>
+        </div>
+        <input type="hidden" name="innerState" required />
+      </section>
+
+      <!-- ============ Page 4 ============ -->
+      <section data-step="4" class="step pb-24 sm:pb-0">
+        <h2 class="font-display glow-gold text-[1.7rem] sm:text-3xl mb-2">細心照料 ➔ 專屬準備</h2>
+        <p class="text-base sm:text-lg leading-loose text-[#EAE6DF]/85 mb-6">
+          除了靈魂的對話，也想照顧妳的感官。留下聯絡方式與飲食偏好，讓我們備好對頻的小茶點。
+        </p>
+
+        <div class="space-y-5">
+          <div>
+            <label class="field-label">行動電話</label>
+            <input type="tel" name="phone" class="field-input" placeholder="09XX-XXX-XXX" required />
+          </div>
+          <div>
+            <label class="field-label">Instagram ID</label>
+            <input type="text" name="igId" class="field-input" placeholder="@your_instagram" required />
+            <p class="field-hint">有需要時會聯絡</p>
+          </div>
+          <div>
+            <label class="field-label">茶點飲食習慣調查</label>
+            <div class="space-y-3" id="dietGroup">
+              <button type="button" class="choice-btn" data-value="葷食" onclick="selectChoice(this,'diet')"><span class="dot"></span>葷食</button>
+              <button type="button" class="choice-btn" data-value="蛋奶素" onclick="selectChoice(this,'diet')"><span class="dot"></span>蛋奶素</button>
+              <button type="button" class="choice-btn" data-value="全素" onclick="selectChoice(this,'diet')"><span class="dot"></span>全素</button>
+              <button type="button" class="choice-btn" data-value="特殊過敏原" onclick="selectChoice(this,'diet')"><span class="dot"></span>特殊過敏原（請於下方備註簡述）</button>
+            </div>
+            <input type="hidden" name="diet" required />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Page 5 ============ -->
+      <section data-step="5" class="step pb-24 sm:pb-0">
+        <h2 class="font-display glow-gold text-[1.7rem] sm:text-3xl mb-4">能量封存 ➔ 靜待開席</h2>
+
+        <div class="border border-[#D4AF37]/20 rounded-xl p-4 mb-4 text-base leading-relaxed space-y-2">
+          <p>📅 活動日期：<span class="text-[#D4AF37]">2026 / 07 / 10（五）19:00 開席</span></p>
+          <p class="flex items-center gap-1.5 flex-wrap">📍 活動地點：
+            <a href="https://maps.app.goo.gl/UfVAFnoqbP4EtmWQ8" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-1 text-[#D4AF37] font-medium underline underline-offset-3 decoration-[#D4AF37]/45 hover:decoration-[#D4AF37] active:scale-95 transition">
+              穆葉茶坊
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 3h7v7"/><path d="M21 3 10 14"/><path d="M21 14v7H3V3h7"/>
+              </svg>
+            </a>
+            <span class="text-xs text-[#EAE6DF]/40 tracking-wide">（點擊開啟地圖）</span>
+          </p>
+          <p>💰 體驗費用：<span class="text-[#D4AF37]">$590 / 人</span>（含沉浸式茶席、專屬星盤解碼、杯底符文體驗、精緻茶點、神秘小禮物）</p>
+          <div class="rune-divider my-3"></div>
+          <p class="text-[#EAE6DF]/70">匯款帳號 — 銀行代碼 (391)：0000002536256730</p>
+        </div>
+
+        <div class="border border-[#D4AF37]/20 bg-[#D4AF37]/5 rounded-xl p-4 mb-6 text-sm leading-relaxed text-[#EAE6DF]/75">
+          ✨ 貼心提醒：當晚主要以茶會友，建議您提前用餐墊墊肚子，空腹品茗較不適合，讓身體先安頓好，才能安心享受茶香時光。
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <label class="field-label">您的匯款帳戶後五碼</label>
+            <input type="text" name="bankLast5" inputmode="numeric" maxlength="5" class="field-input" placeholder="例如：56730" required />
+          </div>
+          <div>
+            <label class="field-label">備註 / 想對占星老師與茶藝師說的話</label>
+            <textarea name="note" class="field-input" rows="3" placeholder="（選填）"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 成功頁面 ============ -->
+      <section data-step="success" class="step">
+        <p class="text-sm tracking-[0.2em] text-[#D4AF37]/80 mb-3">✦ 提交成功 ✦</p>
+        <h2 class="font-display glow-gold text-[1.7rem] sm:text-3xl mb-5">期待 7/10 週五夜與妳對頻</h2>
+        <p class="text-base sm:text-lg leading-loose text-[#EAE6DF]/85 mb-6">
+          謝謝妳願意保留這段時間給自己。占星老師接下來將靜心為妳計算星盤的陰陽能量比例。
+        </p>
+
+        <div class="rune-divider mb-5"></div>
+
+        <p class="text-base text-[#D4AF37]/90 mb-3">行前溫馨小提醒</p>
+        <ul class="text-base leading-loose text-[#EAE6DF]/80 list-disc pl-5 space-y-2 mb-6">
+          <li>現場將調暗燈光、播放音樂，建議穿著舒適、方便入座的服裝前來。</li>
+          <li>活動 19:00 準時開席，建議提早 5–10 分鐘入場，優雅登出日常。</li>
+        </ul>
+
+        <p class="text-base italic text-[#EAE6DF]/60">茶藝師的茶已備好，占星老師的符文即將顯影，我們當天見。</p>
+      </section>
+
+    </form>
+  </div>
+
+</div>
+
+<!-- ============ 統一底部行動列（手機：固定貼底／桌面：自然排列） ============ -->
+<div id="actionBar">
+  <div class="action-inner">
+    <button type="button" id="prevBtn" class="btn-ghost shrink-0" onclick="handlePrev()">← 上一步</button>
+    <button type="button" id="nextBtn" class="btn-gold pulse flex-1 min-w-0 flex items-center justify-center gap-2" onclick="handleNext()">
+      <span id="nextLabel" class="min-w-0">🌟 撥開星幕，解碼我的內在潮汐</span>
+      <svg id="nextSpinner" class="hidden animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
+        <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   ① Google Apps Script Web App 網址（請填入您的部署網址）
+   ========================================================= */
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1jOj_Vevl1kpZeDjULl1VBsWvC9sTo04vUm5wGqx_GtIkrlbEAMXmaE-0yybx35RX/exec"; // 例如 https://script.google.com/macros/s/xxxxx/exec
+
+/* =========================================================
+   ② 閃爍星空（銳利小星點，與模糊粒子分層呈現）
+   ========================================================= */
+(function stars(){
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let w, h, starsArr = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COUNT = window.innerWidth < 640 ? 55 : 90;
+  function makeStar(){
+    return {
+      x: Math.random()*w,
+      y: Math.random()*h*0.85,
+      r: 0.5 + Math.random()*1.3,
+      baseAlpha: 0.25 + Math.random()*0.55,
+      phase: Math.random()*Math.PI*2,
+      speed: 0.0012 + Math.random()*0.0022,
+      gold: Math.random() < 0.35
+    };
+  }
+  for(let i=0;i<COUNT;i++) starsArr.push(makeStar());
+
+  let t = 0;
+  function tick(){
+    t++;
+    ctx.clearRect(0,0,w,h);
+    starsArr.forEach(s=>{
+      const alpha = s.baseAlpha * (0.35 + 0.65*Math.abs(Math.sin(t*s.speed + s.phase)));
+      ctx.fillStyle = s.gold ? `rgba(238,214,150,${alpha})` : `rgba(255,255,255,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* =========================================================
+   ③ 粒子背景（高模糊、緩慢漂浮、淡入淡出）
+   ========================================================= */
+(function particles(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let w, h, particlesArr = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COUNT = window.innerWidth < 640 ? 16 : 28;
+  const palette = ['rgba(212,175,55,', 'rgba(234,230,223,', 'rgba(150,170,220,'];
+
+  function makeParticle(){
+    return {
+      x: Math.random()*w,
+      y: Math.random()*h,
+      r: 40 + Math.random()*110,
+      vx: (Math.random()-0.5)*0.12,
+      vy: (Math.random()-0.5)*0.10,
+      baseAlpha: 0.05 + Math.random()*0.12,
+      phase: Math.random()*Math.PI*2,
+      speed: 0.0006 + Math.random()*0.0008,
+      color: palette[Math.floor(Math.random()*palette.length)]
+    };
+  }
+  for(let i=0;i<COUNT;i++) particlesArr.push(makeParticle());
+
+  let t = 0;
+  function tick(){
+    t++;
+    ctx.clearRect(0,0,w,h);
+    particlesArr.forEach(p=>{
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < -p.r) p.x = w + p.r;
+      if(p.x > w + p.r) p.x = -p.r;
+      if(p.y < -p.r) p.y = h + p.r;
+      if(p.y > h + p.r) p.y = -p.r;
+
+      const alpha = p.baseAlpha * (0.5 + 0.5*Math.sin(t*p.speed + p.phase));
+      const grad = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      grad.addColorStop(0, p.color + alpha + ')');
+      grad.addColorStop(1, p.color + '0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* =========================================================
+   ④ 表單狀態與步驟流程
+   ========================================================= */
+function handlePosterError(img){
+  if(img.dataset.fallback !== 'local'){
+    img.dataset.fallback = 'local';
+    img.src = 'image.png';
+  } else {
+    img.style.display = 'none';
+    img.parentElement.innerHTML = '<span class="text-xs text-[#EAE6DF]/30 tracking-widest px-4 text-center">找不到海報圖片，請確認圖床網址或將海報命名為 image.png 並放置於同一資料夾</span>';
+  }
+}
+
+const stepLabels = {
+  1: '🌟 撥開星幕，解碼我的內在潮汐',
+  2: '🌙 順應潮汐，檢視當下狀態',
+  3: '🕯️ 照料感官，留下聯繫方式',
+  4: '🔑 能量封存，注入最後契約',
+  5: '🍵 送出報名，7/10 穆葉茶坊見'
+};
+
+const TOTAL_STEPS = 5;
+let currentStep = 1;
+const formData = {};
+
+function renderProgress(){
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  for(let i=1;i<=TOTAL_STEPS;i++){
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i < currentStep ? ' done' : '') + (i === currentStep ? ' current' : '');
+    bar.appendChild(dot);
+  }
+}
+
+function showStep(stepKey){
+  document.querySelectorAll('.step').forEach(sec=>{
+    if(sec.dataset.step === String(stepKey)){
+      sec.classList.add('active');
+    } else {
+      sec.classList.remove('active');
+    }
+  });
+  if(typeof stepKey === 'number') currentStep = stepKey;
+  if(stepKey !== 'success'){
+    renderProgress();
+    updateActionBar();
+    document.getElementById('actionBar').style.display = '';
+  } else {
+    document.getElementById('actionBar').style.display = 'none';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateActionBar(){
+  const prevBtn = document.getElementById('prevBtn');
+  const nextLabel = document.getElementById('nextLabel');
+  prevBtn.classList.toggle('invisible-step', currentStep <= 1);
+  nextLabel.textContent = stepLabels[currentStep] || '';
+  document.getElementById('stepCounter').textContent = `STEP ${currentStep} ／ ${TOTAL_STEPS}`;
+}
+
+function getSection(step){
+  return document.querySelector(`.step[data-step="${step}"]`);
+}
+
+function validateStep(step){
+  const section = getSection(step);
+  const requiredFields = section.querySelectorAll('[required]');
+  for(const field of requiredFields){
+    if(field.name === 'birthTime' && document.getElementById('birthTimeUnknown').checked){
+      continue;
+    }
+    if(field.type === 'hidden'){
+      if(!field.value){
+        flashToast('請選擇一個選項，再繼續下一步');
+        return false;
+      }
+      continue;
+    }
+    if(!field.value || !field.value.trim()){
+      field.focus();
+      flashToast('請填寫完整資訊，再繼續下一步');
+      return false;
+    }
+  }
+  return true;
+}
+
+function collectStepData(step){
+  const section = getSection(step);
+  section.querySelectorAll('input, textarea, select').forEach(field=>{
+    if(!field.name) return;
+    if(field.type === 'checkbox'){
+      formData[field.name] = field.checked;
+    } else {
+      formData[field.name] = field.value;
+    }
+  });
+}
+
+function goNext(step){
+  if(!validateStep(step)) return;
+  collectStepData(step);
+  showStep(step + 1);
+}
+
+function goPrev(step){
+  showStep(step - 1);
+}
+
+function handleNext(){
+  if(currentStep >= TOTAL_STEPS){
+    submitForm();
+  } else {
+    goNext(currentStep);
+  }
+}
+
+function handlePrev(){
+  if(currentStep > 1) goPrev(currentStep);
+}
+
+function selectChoice(btn, groupName){
+  const group = btn.parentElement;
+  group.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const hiddenInput = group.parentElement.querySelector(`input[name="${groupName}"]`)
+    || group.nextElementSibling;
+  if(hiddenInput) hiddenInput.value = btn.dataset.value;
+}
+
+function toggleBirthTime(checkbox){
+  const timeInput = document.querySelector('input[name="birthTime"]');
+  if(checkbox.checked){
+    timeInput.value = '';
+    timeInput.disabled = true;
+    timeInput.placeholder = '時間不確定';
+  } else {
+    timeInput.disabled = false;
+  }
+}
+
+/* =========================================================
+   ⑤ Toast 提示
+   ========================================================= */
+let toastTimer;
+function flashToast(message, isError = true){
+  const toast = document.getElementById('toast');
+  toast.innerHTML = `
+    <div class="glass-card rounded-full px-5 py-3 text-sm flex items-center gap-2 ${isError ? 'text-[#EAE6DF]' : 'text-[#EAE6DF]'}">
+      <span style="color:${isError ? '#D98C6B' : '#D4AF37'}">${isError ? '✦' : '✓'}</span> ${message}
+    </div>`;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> toast.classList.remove('show'), 2800);
+}
+
+/* =========================================================
+   ⑥ 送出表單（POST 至 Google Apps Script）
+   ========================================================= */
+async function submitForm(){
+  const step5 = 5;
+  if(!validateStep(step5)) return;
+  collectStepData(step5);
+
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextLabel = document.getElementById('nextLabel');
+  const nextSpinner = document.getElementById('nextSpinner');
+
+  nextBtn.disabled = true;
+  prevBtn.disabled = true;
+  nextLabel.textContent = '能量正在封存中...';
+  nextSpinner.classList.remove('hidden');
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    ...formData
+  };
+
+  try{
+    if(!WEB_APP_URL || WEB_APP_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL')){
+      throw new Error('尚未設定 WEB_APP_URL');
+    }
+
+    // 注意：使用 text/plain 可避免觸發瀏覽器的 CORS 預檢請求（preflight），
+    // 讓 Google Apps Script Web App 能順利接收 POST 資料。
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+
+    showStep('success');
+    flashToast('提交成功，靜待開席', false);
+
+  } catch(err){
+    console.error('送出失敗：', err);
+    flashToast('傳送時發生問題，請稍後再試一次，或直接聯繫主辦單位');
+  } finally {
+    nextBtn.disabled = false;
+    prevBtn.disabled = false;
+    nextLabel.textContent = stepLabels[currentStep] || stepLabels[5];
+    nextSpinner.classList.add('hidden');
+  }
+}
+
+renderProgress();
+updateActionBar();
+</script>
+</body>
+</html>

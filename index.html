@@ -112,13 +112,53 @@
     color: var(--moon);
     font-family:'Noto Serif TC',serif;
     transition: border-color .3s, box-shadow .3s, background .3s;
+    color-scheme: dark;
   }
   .field-input::placeholder{ color: rgba(234,230,223,0.35); }
+
+  /* iOS 原生日期/時間選擇器外觀重置，避免跳出與整體風格不符的淺色盒子 */
+  input[type="date"].field-input,
+  input[type="time"].field-input{
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type="date"].field-input::-webkit-date-and-time-value,
+  input[type="time"].field-input::-webkit-date-and-time-value{
+    text-align: left;
+  }
   .field-input:focus{
     outline:none;
     border-color: var(--gold);
     background: rgba(212,175,55,0.04);
     box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+  }
+
+  /* ---------- 覆寫瀏覽器自動填寫的黃色底色 ---------- */
+  .field-input:-webkit-autofill,
+  .field-input:-webkit-autofill:hover,
+  .field-input:-webkit-autofill:focus,
+  .field-input:autofill{
+    -webkit-text-fill-color: var(--moon);
+    caret-color: var(--moon);
+    -webkit-box-shadow: 0 0 0 1000px rgba(20,20,16,0.92) inset;
+    box-shadow: 0 0 0 1000px rgba(20,20,16,0.92) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* 覆寫瀏覽器自動填寫（Autofill）的黃色底色，維持深色玻璃風格 */
+  .field-input:-webkit-autofill,
+  .field-input:-webkit-autofill:hover,
+  .field-input:-webkit-autofill:focus,
+  .field-input:-webkit-autofill:active{
+    -webkit-text-fill-color: var(--moon) !important;
+    -webkit-box-shadow: 0 0 0 1000px rgba(20,20,16,0.6) inset !important;
+    box-shadow: 0 0 0 1000px rgba(20,20,16,0.6) inset !important;
+    caret-color: var(--moon);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+  .field-input:autofill{
+    -webkit-text-fill-color: var(--moon) !important;
+    color: var(--moon) !important;
   }
   .field-label{
     display:block; font-size:0.95rem; letter-spacing:0.03em;
@@ -478,7 +518,7 @@
 /* =========================================================
    ① Google Apps Script Web App 網址（請填入您的部署網址）
    ========================================================= */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1jOj_Vevl1kpZeDjULl1VBsWvC9sTo04vUm5wGqx_GtIkrlbEAMXmaE-0yybx35RX/exec"; // 例如 https://script.google.com/macros/s/xxxxx/exec
+const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"; // 例如 https://script.google.com/macros/s/xxxxx/exec
 
 /* =========================================================
    ② 閃爍星空（銳利小星點，與模糊粒子分層呈現）

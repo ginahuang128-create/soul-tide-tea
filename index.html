@@ -526,6 +526,21 @@
 
 <div id="toast"></div>
 
+<!-- ============ 報名成功後的社群邀請彈窗 ============ -->
+<div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(5,6,12,0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);">
+  <div class="glass-card w-full max-w-sm rounded-2xl p-6 sm:p-7 text-center">
+    <p class="text-sm tracking-[0.2em] text-[#D4AF37]/80 mb-2">✦ 報名資料已成功送出 ✦</p>
+    <h3 class="font-display glow-gold text-xl sm:text-2xl leading-snug mb-4">手刀填完單了，別忘了加入我們的專屬社群唷 👇</h3>
+    <p class="text-base leading-relaxed text-[#EAE6DF]/85 mb-6">
+      您已被邀請加入「大人の女子会」！<br>請點選以下連結加入社群！
+    </p>
+    <a href="https://line.me/ti/g2/BlDIgyE6ELNOQaJ8iPkmxmUVkJpoU249XXrWQQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+       target="_blank" rel="noopener noreferrer"
+       class="btn-gold block w-full mb-3">加入 LINE 社群</a>
+    <button type="button" onclick="closeSuccessModal()" class="btn-ghost w-full">稍後再說</button>
+  </div>
+</div>
+
 <script>
 /* =========================================================
    ① Google Apps Script Web App 網址（請填入您的部署網址）
@@ -793,6 +808,18 @@ function flashToast(message, isError = true){
   toastTimer = setTimeout(()=> toast.classList.remove('show'), 2800);
 }
 
+function showSuccessModal(){
+  const modal = document.getElementById('successModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeSuccessModal(){
+  const modal = document.getElementById('successModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
 /* =========================================================
    ⑥ 送出表單（POST 至 Google Apps Script）
    ========================================================= */
@@ -831,6 +858,7 @@ async function submitForm(){
 
     showStep('success');
     flashToast('提交成功，靜待開席', false);
+    showSuccessModal();
 
   } catch(err){
     console.error('送出失敗：', err);

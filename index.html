@@ -321,6 +321,21 @@
 <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-10 sm:py-16">
   <div class="glass-card w-full max-w-2xl rounded-2xl p-6 sm:p-10">
 
+    <!-- ============ 名額已滿提示（表單關閉時顯示） ============ -->
+    <div id="soldOutCard" class="hidden text-center py-10">
+      <p class="text-sm tracking-[0.2em] text-[#D4AF37]/80 mb-3">✦ 報名已額滿 ✦</p>
+      <h2 class="font-display glow-gold text-2xl sm:text-3xl leading-snug mb-5">《潮汐對頻》品茶晚席<br>名額已全數額滿 🙏</h2>
+      <p class="text-base leading-relaxed text-[#EAE6DF]/80 mb-6">
+        非常感謝大家的熱情支持～<br>本場次候補名額也已額滿，暫不開放新的報名。<br>專屬社群僅開放給本次有參加的夥伴，若想搶先掌握下一場活動，歡迎先到我們的活動月曆看看還有哪些場次 💛
+      </p>
+      <a href="https://script.google.com/macros/s/AKfycbxVAvP98-f27A_0W_Zzqk2UQfCSfRP2D2hIDSaKqRPa9_LcHOf2OhY4j4dJL-4abzgR/exec"
+         target="_blank" rel="noopener noreferrer"
+         class="btn-gold inline-block">查看更多活動月曆</a>
+    </div>
+
+    <!-- ============ 報名表單（額滿時會被 JS 隱藏） ============ -->
+    <div id="formWrap">
+
     <!-- 進度刻度（共 5 步，真實流程順序） -->
     <div class="flex items-center justify-between mb-8">
       <div id="progressBar" class="flex items-center gap-2"></div>
@@ -506,6 +521,10 @@
       </section>
 
     </form>
+
+    </div>
+    <!-- /formWrap -->
+
   </div>
 
 </div>
@@ -549,6 +568,19 @@
    ① Google Apps Script Web App 網址（請填入您的部署網址）
    ========================================================= */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1jOj_Vevl1kpZeDjULl1VBsWvC9sTo04vUm5wGqx_GtIkrlbEAMXmaE-0yybx35RX/exec"; // 例如 https://script.google.com/macros/s/xxxxx/exec
+
+/* =========================================================
+   ①-2 名額已滿開關
+   要「關閉表單、顯示已額滿」時 → 改成 true
+   要「重新開放報名」時 → 改回 false
+   ========================================================= */
+const EVENT_FULL = true;
+
+if (EVENT_FULL) {
+  document.getElementById('formWrap').classList.add('hidden');
+  document.getElementById('soldOutCard').classList.remove('hidden');
+  document.getElementById('actionBar').classList.add('hidden');
+}
 
 /* =========================================================
    ② 閃爍星空（銳利小星點，與模糊粒子分層呈現）
